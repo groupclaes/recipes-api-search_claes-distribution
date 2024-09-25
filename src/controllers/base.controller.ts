@@ -18,7 +18,7 @@ declare module 'fastify' {
 
 export default async function (fastify: FastifyInstance) {
   /**
-   * Get analytics dashboard from DB
+   * Get list of recipes based on supplied search parameters
    * @route GET /api/{APP_VERSION}/recipes/search
    */
   fastify.get('', getSchema, async function (request: FastifyRequest<{
@@ -43,21 +43,20 @@ export default async function (fastify: FastifyInstance) {
 
       let filters = ''
 
-      if (request.query.types?.length ?? 0 > 0) {
+      if (request.query.types?.length ?? 0 > 0)
         filters += `${request.query.types};`
-      } else {
+      else
         filters += ';'
-      }
 
-      if (request.query.tags?.length ?? 0 > 0) {
+      if (request.query.tags?.length ?? 0 > 0)
         filters += request.query.tags
-      }
 
       const pool = await fastify.getSqlPool()
       const repo = new Recipe(request.log, pool)
       const response = await repo.list({ page, count, culture, query, collection })
 
-      if (response) return reply.success(response, 200, performance.now() - start)
+      if (response)
+        return reply.success(response, 200, performance.now() - start)
       return reply.fail({ query: 'no results!' }, 404, performance.now() - start)
     } catch (err) {
       request.log.error({ err }, 'failed to get recipe list!')
@@ -65,7 +64,7 @@ export default async function (fastify: FastifyInstance) {
     }
   })
   /**
-   * Get analytics dashboard from DB
+   * Get recipes for a given product_id
    * @route GET /api/{APP_VERSION}/recipes/search
    */
   fastify.get('/product/:product_id', getSchema, async function (request: FastifyRequest<{
@@ -86,7 +85,8 @@ export default async function (fastify: FastifyInstance) {
       const repo = new Recipe(request.log, pool)
       const response = await repo.list({ product_id, culture })
 
-      if (response) return reply.success(response, 200, performance.now() - start)
+      if (response)
+        return reply.success(response, 200, performance.now() - start)
       return reply.fail({ query: 'no results!' }, 404, performance.now() - start)
     } catch (err) {
       request.log.error({ err }, 'failed to get recipes list for product!')
